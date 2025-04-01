@@ -25,7 +25,7 @@ class InfluxDBCredentials:
 
 def saveCredentials(credentials: InfluxDBCredentials) -> None:
     """Save the credentials to disk."""
-    filename = os.path.join(os.environ['YBCONFIG'], INFLUXDB_CREDENTIAL_STORE_FILENAME)
+    filename = "config\influxdb_credentials.json"
     with open(filename, "w") as f:
         json.dump(
             {
@@ -41,7 +41,7 @@ def saveCredentials(credentials: InfluxDBCredentials) -> None:
 
 def restoreCredentials() -> InfluxDBCredentials:
     """When the server starts, it tries to restore the credentials."""
-    filename = os.path.join(os.environ['YBCONFIG'], INFLUXDB_CREDENTIAL_STORE_FILENAME)
+    filename = "config\influxdb_credentials.json"
     try:
         with open(str(filename), "r") as f:
             data = json.load(f)
