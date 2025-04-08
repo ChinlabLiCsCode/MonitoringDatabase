@@ -25,7 +25,7 @@ class DeviceManager(multiprocessing.Process):
         self.DeviceClass = getattr(importlib.import_module("devices." + self.deviceType + "." + self.deviceType + "Controller"), self.deviceType )
 
         #get the config folder path variable
-        self.ybConfig = os.environ["YBCONFIG"]
+        #self.ybConfig = os.environ["YBCONFIG"]
 
         #List containing all data from all devices
         self.serverData = queue
@@ -44,7 +44,7 @@ class DeviceManager(multiprocessing.Process):
         """
 
         #assemble file path
-        self.filepath = os.path.join(self.ybConfig, (self.deviceType + "Configs"), (self.deviceName + "Configs") ,(self.deviceName + "Config" + str(self.configNum) + ".yml"))
+        self.filepath = os.path.join("configs", (self.deviceType + "Configs"), (self.deviceName + "Configs") ,(self.deviceName + "Config" + str(self.configNum) + ".yml"))
 
         #open the config file
         try:

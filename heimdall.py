@@ -11,11 +11,12 @@ class ServerManager(rpyc.Service):
     Class for managing all device managers, collects data from all active devices and periodically uploads to influxDB
     """
     def __init__(self):
-        self.ybConfig = os.environ["YBCONFIG"]
+        self.ybConfig = "configs"
+        #os.environ["YBCONFIG"]
         self.isServerActive = False
 
         #get the device server class
-        self.DeviceManager = getattr(importlib.import_module("ybtools.deviceManager"), "DeviceManager")
+        self.DeviceManager = getattr(importlib.import_module("deviceManager"), "DeviceManager")
 
         #read the server config file
         self.readServerConfig()
@@ -27,7 +28,7 @@ class ServerManager(rpyc.Service):
         self.initServerManager()
 
         #start server
-        self.exposed_activateServers()
+        #self.exposed_activateServers()
 
     def readServerConfig(self):
         """

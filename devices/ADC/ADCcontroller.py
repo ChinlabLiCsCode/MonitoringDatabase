@@ -25,6 +25,16 @@ class ADC():
     def getChVoltage(self, ch:int):
         "Return the specific channel voltage from the usb accounting for the fact that the ADC uses 256 bits"
 
-        self.chVoltage = (self.analog[ch] - 240)*256 + self.analog[ch+12]
-        return self.chVoltage       
+        self.chVoltage = (self.analog[ch-1] - 240)*256 + self.analog[(ch-1)+12]
+
+        return self.chVoltage
+
+    def getAllVoltages(self):
+        self.voltages = []
+
+        for i in range(0,11):
+            v = (self.analog[i] - 240)*256 + self.analog[i]
+            self.voltages.append(v)
+        
+        return self.voltages
 
