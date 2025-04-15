@@ -104,7 +104,7 @@ class DeviceManager(multiprocessing.Process):
 
                             "fields": {self.deviceParameters[parameter]["measurement"]: getattr(self.device, 'get' + methodCall)()},
 
-                            "time": int(time.time())
+                            "time": int(time.time()*1e3)
                             }}
                         )
                     else:
@@ -117,7 +117,7 @@ class DeviceManager(multiprocessing.Process):
 
                             "fields": {self.deviceParameters[parameter]["measurement"]: getattr(self.device, 'get' + methodCall)(chNum)},
 
-                            "time": int(time.time())
+                            "time": int(time.time()*1e3)
                             }}
                         )
         except Exception as e:
@@ -140,7 +140,7 @@ class DeviceManager(multiprocessing.Process):
                     self.isCollecting.clear()
 
             counter += 1
-            time.sleep(1) #make value specific to each device
+            time.sleep(0.001)
 
     def startServer(self):
         """

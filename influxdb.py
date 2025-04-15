@@ -3,6 +3,7 @@ from multiprocessing import Queue
 from time import sleep
 
 import influxdb_client
+from influxdb_client import WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.rest import ApiException
 
@@ -25,7 +26,7 @@ class InfluxDBCredentials:
 
 def saveCredentials(credentials: InfluxDBCredentials) -> None:
     """Save the credentials to disk."""
-    filename = "configs\influxdb_credentials.json"
+    filename = os.path.join("configs",  INFLUXDB_CREDENTIAL_STORE_FILENAME)
     with open(filename, "w") as f:
         json.dump(
             {
@@ -41,7 +42,7 @@ def saveCredentials(credentials: InfluxDBCredentials) -> None:
 
 def restoreCredentials() -> InfluxDBCredentials:
     """When the server starts, it tries to restore the credentials."""
-    filename = "configs\influxdb_credentials.json"
+    filename = os.path.join("configs",  INFLUXDB_CREDENTIAL_STORE_FILENAME)
     try:
         with open(str(filename), "r") as f:
             data = json.load(f)
@@ -82,7 +83,7 @@ class InfluxDBLogger:
         client = influxdb_client.InfluxDBClient(
             url=self.credentials.url,
             token=self.credentials.token,
-            org=self.credentials.org,
+            org=self.credentials.org
         )
         self.write_api = client.write_api(write_options=SYNCHRONOUS)
     
@@ -105,9 +106,20 @@ class InfluxDBLogger:
         while self.isLogging:
             try:
                 while not self.queue.empty():
-                    self.data = self.queue.get()
-                    print(self.data)
-                    self.writeData(self.data)
+                    self.entries = []
+                    #grab 1000 data points from the queue
+                    for i in range(5000):
+                        if not self.queue.empty():
+                            self.data = self.queue.get()
+                            self.entries.append(self.data)
+                    
+                    #reformat the entries as a list of tuples (bucketName, dataPoint)
+                    self.dataPoints = [list(entry.values())[0] for entry in self.entries]
+                    bucketName = list(self.entries[0].keys())[0]
+                    
+                    record = [bucketName, self.dataPoints]
+                    #write the data
+                    self.writeData(record)
                 sleep(self.credentials.uploadRate)
             except Exception as e:
                 print("Error with logging")
@@ -146,8 +158,9 @@ class InfluxDBLogger:
     def writeData(self, entry: dict):
         """Write data to the database"""
         self.write_api.write(
-            bucket=list(entry.keys())[0],
+            bucket=entry[0],
             org=self.credentials.org,
-            record=entry[list(entry.keys())[0]],
-            write_precision="s"
+            record=entry[1],
+            write_precision=WritePrecision.MS
         )
+        print(entry[1])
