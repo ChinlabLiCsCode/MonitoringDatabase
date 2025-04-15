@@ -68,11 +68,13 @@ The config file should be a .yml file formatted in the following way:
         parameter 1:
             isOn: True
             measurement: "measurment + units"
+            field: "what you actually measure"
         
         parameter 2:
             isOn:
             chNum:
             measurement:
+            field: "what you actually measure"
         .
         .
         .
@@ -80,6 +82,7 @@ The config file should be a .yml file formatted in the following way:
         parameter n:
             isOn: 
             measurement:
+            field: "what you actually measure"
 
 The parameters should be a dictionary containing the function names being called. For example, if your device driver has a function called getMainTemp, then one of the parameters should be MainTemp with the mearement being "Temperature (units)"
 
