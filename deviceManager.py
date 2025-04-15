@@ -102,7 +102,7 @@ class DeviceManager(multiprocessing.Process):
 
                             "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
 
-                            "fields": {self.deviceParameters[parameter]["measurement"]: getattr(self.device, 'get' + methodCall)()},
+                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)()},
 
                             "time": int(time.time()*1e3)
                             }}
@@ -115,7 +115,7 @@ class DeviceManager(multiprocessing.Process):
 
                             "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
 
-                            "fields": {self.deviceParameters[parameter]["measurement"]: getattr(self.device, 'get' + methodCall)(chNum)},
+                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum)},
 
                             "time": int(time.time()*1e3)
                             }}
@@ -126,9 +126,10 @@ class DeviceManager(multiprocessing.Process):
             print(e)
 
     def collectData(self):
+        counter = 0
         while self.isCollecting.is_set():
-            counter = 0
             if counter % self.sampleRate == 0:
+                counter=0
                 try:
                     self.getData()
                     for value in self.deviceData:
