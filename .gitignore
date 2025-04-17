@@ -1,3 +1,5 @@
 configs/*
 .DS_Store
 __pycache__/*
+dracal-usb-get.exe
+libusb-1.0.dll
