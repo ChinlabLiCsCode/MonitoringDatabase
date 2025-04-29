@@ -9,14 +9,15 @@ class Dracal():
         pass
 
     def close(self):
-        sys.exit(0)
+        #sys.exit(0)
+        pass
 
     def getHumidity(self):
         try:
             self.p = subprocess.check_output(["dracal-usb-get","-s", self.SN,"-i","1"]).decode('utf-8')
         except subprocess.CalledProcessError:
             print("dracal-usb-get error")
-            sys.exit(1)
+            #sys.exit(1)
 
         fields = self.p.split(",")
 
@@ -32,7 +33,7 @@ class Dracal():
             self.p = subprocess.check_output(["dracal-usb-get","-s", self.SN,"-i","0"]).decode('utf-8')
         except subprocess.CalledProcessError:
             print("dracal-usb-get error")
-            sys.exit(1)
+            #sys.exit(1)
 
         fields = self.p.split(",")
 
@@ -42,6 +43,6 @@ class Dracal():
         #self.p.kill()
         return temp
     
-d = Dracal("E14760")
-d.getHumidity()
-d.getTemp()
+#d = Dracal("E14760")
+#d.getHumidity()
+#d.getTemp()
