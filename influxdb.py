@@ -163,4 +163,13 @@ class InfluxDBLogger:
             record=entry[1],
             write_precision=WritePrecision.MS
         )
+
+        self.write_api.write(
+            bucket="monitoring",
+            org=self.credentials.org,
+            record={
+                "measurement": "queue length",
+                "fields": {"Queue Lenght": self.queue.qsize()}
+            }
+        )
         print(entry[1])
