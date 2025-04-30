@@ -118,8 +118,11 @@ class ServerManager(rpyc.Service):
         #stop all servers
         self.exposed_stopAllServers()
 
+        #reread the main config file
+        self.readServerConfig()
+        
         #check how many device servers are active 
-        self.checkNumDevices()
+        #self.checkNumDevices()
 
         #reinit servers
         self.initServerManager()
