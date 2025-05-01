@@ -1,53 +1,46 @@
-import sys
 import subprocess
 
 class Dracal():
-    def __init__(self, SN:str):
-        self.SN = SN
+    def __init__(self, name):
+        pass
 
     def open(self):
         pass
 
     def close(self):
-        #sys.exit(0)
         pass
 
-    def getHumidity(self):
+    def getChHume(self, chNum:str):
+        "chNum is the serial number of the device"
+        self.SN = chNum
+
         try:
             self.p = subprocess.check_output(["dracal-usb-get","-s", self.SN,"-i","1"]).decode('utf-8')
         except subprocess.CalledProcessError:
             print("dracal-usb-get error")
-            print("Can't Get Humidity")
-            #sys.exit(1)
+            message = "Can't get Humidity for " + chNum
+            print(message)
 
         fields = self.p.split(",")
 
         rh = float(fields[0])
-
-        #self.p.kill()
         return rh
 
 
-    def getTemp(self):
+    def getChTemp(self, chNum:str):
+        "ChHum is the serial number of the device"
+        self.SN = chNum
+
         try:
             self.p = subprocess.check_output(["dracal-usb-get","-s", self.SN,"-i","0"]).decode('utf-8')
         except subprocess.CalledProcessError:
             print("dracal-usb-get error")
-            print("Can't get Temp")
-            #sys.exit(1)
+            message = "Can't get Temperature for " + chNum
+            print(message)
+
 
         fields = self.p.split(",")
 
         temp = float(fields[0])
-
-        #self.p.kill()
         return temp
 
-"""
-d = Dracal("E14760")
-rh = d.getHumidity()
-temp = d.getTemp()
-
-print(temp)
-print(rh)
-"""
