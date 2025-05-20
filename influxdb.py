@@ -83,7 +83,9 @@ class InfluxDBLogger:
         client = influxdb_client.InfluxDBClient(
             url=self.credentials.url,
             token=self.credentials.token,
-            org=self.credentials.org
+            org=self.credentials.org,
+            ssl=True,
+            verify_ssl=False
         )
         self.write_api = client.write_api(write_options=SYNCHRONOUS)
     
@@ -131,6 +133,8 @@ class InfluxDBLogger:
             url=self.credentials.url,
             token=self.credentials.token,
             org=self.credentials.org,
+            ssl=True,
+            verify_ssl=False
         )
 
         health = client.health()
