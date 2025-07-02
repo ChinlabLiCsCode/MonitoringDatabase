@@ -169,7 +169,7 @@ class InfluxDBLogger:
         )
 
         self.write_api.write(
-            bucket="monitoring",
+            bucket="monitoringV2",
             org=self.credentials.org,
             record={
                 "measurement": "queue length",
