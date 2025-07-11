@@ -25,7 +25,7 @@ class DeviceManager(multiprocessing.Process):
         self.DeviceClass = getattr(importlib.import_module("devices." + self.deviceType + "." + self.deviceType + "Controller"), self.deviceType )
 
         #get the config folder path variable
-        #self.ybConfig = os.environ["YBCONFIG"]
+        self.deviceConfigs = os.environ["DatabaseDevelopmentConfigs"]
 
         #List containing all data from all devices
         self.serverData = queue

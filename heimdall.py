@@ -11,8 +11,7 @@ class ServerManager(rpyc.Service):
     Class for managing all device managers, collects data from all active devices and periodically uploads to influxDB
     """
     def __init__(self):
-        self.ybConfig = "configs"
-        #os.environ["YBCONFIG"]
+        self.deviceConfigs = os.environ["DatabaseDevelopmentConfigs"]
         self.isServerActive = False
 
         #get the device server class
@@ -35,7 +34,7 @@ class ServerManager(rpyc.Service):
         Reads server config file, collects influx database credentials and checks how many device servers are active
         """
         #assemble file path
-        self.filepath = os.path.join(self.ybConfig,  "mainServerConfig.yml")
+        self.filepath = os.path.join(self.deviceConfigs,  "mainServerConfig.yml")
 
         #open the config file
         try:
