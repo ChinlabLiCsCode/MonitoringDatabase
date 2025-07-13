@@ -44,7 +44,7 @@ class DeviceManager(multiprocessing.Process):
         """
 
         #assemble file path
-        self.filepath = os.path.join("configs", (self.deviceType + "Configs"), (self.deviceName + "Configs") ,(self.deviceName + "Config" + str(self.configNum) + ".yml"))
+        self.filepath = os.path.join(self.deviceConfigs, (self.deviceType + "Configs"), (self.deviceName + "Configs") ,(self.deviceName + "Config" + str(self.configNum) + ".yml"))
 
         #open the config file
         try:
