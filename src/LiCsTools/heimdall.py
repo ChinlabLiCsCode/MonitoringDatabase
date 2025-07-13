@@ -1,11 +1,12 @@
 import os
-import importlib
 import multiprocessing
 import rpyc
 from rpyc.utils.server import ThreadedServer
 import yaml
 from yaml.loader import FullLoader
-from influxdb import InfluxDBLogger
+from LiCsTools.influxdb import InfluxDBLogger
+from LiCsTools.deviceManager import DeviceManager
+
 class ServerManager(rpyc.Service):
     """
     Class for managing all device managers, collects data from all active devices and periodically uploads to influxDB
@@ -13,9 +14,6 @@ class ServerManager(rpyc.Service):
     def __init__(self):
         self.deviceConfigs = os.environ["DatabaseDevelopmentConfigs"]
         self.isServerActive = False
-
-        #get the device server class
-        self.DeviceManager = getattr(importlib.import_module("deviceManager"), "DeviceManager")
 
         #read the server config file
         self.readServerConfig()
@@ -27,7 +25,7 @@ class ServerManager(rpyc.Service):
         self.initServerManager()
 
         #start server
-        #self.exposed_activateServers()
+        self.exposed_activateServers()
 
     def readServerConfig(self):
         """
@@ -73,7 +71,7 @@ class ServerManager(rpyc.Service):
         for device in self.activeDevices:
             self.deviceType = self.deviceList[device]["deviceType"]
             self.deviceConfigNum = self.deviceList[device]["config"]
-            self.deviceServers[device] = self.DeviceManager(deviceType=self.deviceType, deviceName =device, configNum=self.deviceConfigNum, queue=self.influx.queue)
+            self.deviceServers[device] = DeviceManager(deviceType=self.deviceType, deviceName =device, configNum=self.deviceConfigNum, queue=self.influx.queue)
 
     def exposed_listActiveServers(self):
         return self.servers
@@ -153,7 +151,7 @@ class ServerManager(rpyc.Service):
         elif deviceName in self.activeDevices:
             self.deviceType = self.deviceList[deviceName]["deviceType"]
             self.deviceConfigNum = self.deviceList[deviceName]["config"]
-            self.deviceServers[deviceName] = self.DeviceManager(deviceType=self.deviceType, deviceName =deviceName, configNum=self.deviceConfigNum, queue=self.influx.queue)
+            self.deviceServers[deviceName] = DeviceManager(deviceType=self.deviceType, deviceName =deviceName, configNum=self.deviceConfigNum, queue=self.influx.queue)
 
             self.servers[deviceName] = multiprocessing.Process(target=self.deviceServers[deviceName].startServer)
             self.servers[deviceName].run()
@@ -200,6 +198,10 @@ class ServerManager(rpyc.Service):
         else:
             print("Error: Server is still active")
 
-if __name__ == "__main__":
+def activate():
+    global server 
     server = ThreadedServer(service=ServerManager(), port=18861)
     server.start()
+
+if __name__ == "__main__":
+    activate()
