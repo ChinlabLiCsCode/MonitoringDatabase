@@ -11,12 +11,12 @@ The deviceManager.py file contains a class DeviceManager with following paramete
 
 1. deviceType: This is the general name for a device - ex: TSP01
 2. deviceName: This is the specific name assigned to a device - ex: TSP1
-3. configNum: This value specifies the config file bein used
+3. configNum: This value specifies the config file being used
 4. queue: this is the multiprocessing queue that the collected data is being sent to
 
 The first three parameters should match what is specified in the main server config so that the deviceManager can find the correct config file and device driver. This means that if the path to your device driver and config file are:
 
-    /devices/TSP01/TSP01Controller.py
+    /devices/TSP01Controller.py
     /configfiles/TSP01Configs/TSP1Configs/TSP1Config1.yml
 
 The deviceType should be TSP01, the deviceName should be TSP1 and the configNum should be 1
@@ -51,7 +51,14 @@ https://rpyc.readthedocs.io/en/latest/tutorial/tut3.html
 To add a new device to be monitored you only need a config file that specifies information about the device and a [deviceType]Controller.py file that directly communicates with it.
 
 ## config file
-The config file should be a .yml file formatted in the following way:
+
+### Location
+The path to any devices config file should be \configs\DeviceTypeConfigs\DeviceNameConfigs\DeviceNameConfigConfigNum.yml
+
+where configNum should be an integer specigiying which config file you are using if you have multiple config files for the same device
+
+### Device Config
+The config file for a specific device should be a .yml file formatted in the following way:
 
 
     SN: "Serial Number"
@@ -88,6 +95,20 @@ The parameters should be a dictionary containing the function names being called
 
 The code filters out any integers from the parameter names so if your device has multiple channels and your driver has a function getChValue() then your parameter name should be Ch1Value and so on. To avoid errors your parameter should also include an entry called chNum which specified the channel being called
 
+### mainServerConfg.yml
+This file should be located in the \configs folder and is used by the server manager to determine which specific devices are active. It should be formatted in the following way
+
+    devices:
+        DeviceName:
+            deviceType: "deviceType"
+            isOn: "True or False
+            config: "The config file number to use
+        
+        .
+        .
+        .
+        
+
 ## device driver
 The device driver is a python file with the name [deviceType]Controller.py where [deviceType] is the general name -ex: TSP01.
 
@@ -102,3 +123,22 @@ Here is a link to the influxdb documentation:
 here is a link to the grafana documentation:
 
 [Grafana Documentation](https://grafana.com/docs/grafana/latest/)
+
+# Running the code
+
+## Initial Setup
+
+To run the code you need to ensure that:
+1. The path to your config files folder has been added as an evironment variable named DatabaseDevelopmentConfigs (you could rename this if you want, just make sure that you edit the code the files in LiCsTools to match the new name)
+2. The path to your devices folder has been added to python path (This can be done by creating an environment variable called PYTHONPATH and pasting the path to the devices folder, you can very that this works by running sys.path in any python terminal)
+
+Additionally:
+1. make sure that all of your devices are connected
+2. make sure that your config file for each device is correct
+3. make sure that you create and/or edit the mainServerConfig.yml file to list which devices are active
+
+## Installation
+Once the initial setup has been completed, do the following:
+1. open a terminal, actvate your conda environment, and CD into the DatabaseDevelopmentDirectory which should contain a pyproject.toml file
+2. run python -m pip install -e. to install the project into your conda environment
+3. activate it by running the heimdall command in the terminal
