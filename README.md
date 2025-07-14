@@ -107,10 +107,9 @@ This file should be located in the \configs folder and is used by the server man
         .
         .
         .
-        
 
 ## device driver
-The device driver is a python file with the name [deviceType]Controller.py where [deviceType] is the general name -ex: TSP01.
+The device driver is a python file with the name [deviceType]Controller.py where [deviceType] is the general name -ex: TSP01. All device drivers should be stored in the \devices folder
 
 The driver should contain a class with the same name as the deviceType. This class should have open and close functions aswell as getValue functions that match the parameters in the config file
 
