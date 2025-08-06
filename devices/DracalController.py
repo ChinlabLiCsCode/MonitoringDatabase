@@ -1,7 +1,7 @@
 import subprocess
 
 class Dracal():
-    def __init__(self, name):
+    def __init__(self, name, triggered=False):
         pass
 
     def open(self):
