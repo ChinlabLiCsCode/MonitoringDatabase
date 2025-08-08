@@ -94,8 +94,8 @@ class DeviceManager(multiprocessing.Process):
                 #filter out any integers so that gettatr works
                 methodCall = ''.join([i for i in parameter if not i.isdigit()])
 
-                #get triggering boolean: for now this is only relevant to the nidaq
-                triggered = self.deviceParameters[parameter]["triggered"]
+                #get trigger: for now this is only relevant to the nidaq
+                trigger = self.deviceParameters[parameter]["trigger"]
 
                 if self.deviceParameters[parameter]["isOn"]:
                     if "chNum" not in self.deviceParameters[parameter].keys():
@@ -105,7 +105,7 @@ class DeviceManager(multiprocessing.Process):
 
                             "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
 
-                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(triggered)},
+                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(trigger)},
 
                             "time": int(time.time()*1e3)
                             }}
@@ -118,7 +118,7 @@ class DeviceManager(multiprocessing.Process):
 
                             "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
 
-                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum, triggered)},
+                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum, trigger)},
 
                             "time": int(time.time()*1e3)
                             }}
@@ -172,3 +172,11 @@ class DeviceManager(multiprocessing.Process):
         print("Stopped " + self.deviceName + " server")
 
         self.closeDevice()
+    
+    def readVal(self, parameter, chNum, trigger=None):
+        """
+        Function for returning a value from a device to verify if it works or not
+        """
+
+        #get the value and return it
+        return getattr(self.device, "get" + parameter)(chNum, trigger)

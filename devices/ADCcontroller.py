@@ -5,7 +5,7 @@ class ADC():
     
     It just connects to the device via mmap and then reads the specified channel voltage"""
 
-    def __init__(self, deviceName, triggered=False):
+    def __init__(self, deviceName, trigger=None):
         self.deviceName = deviceName
     
     def open(self):

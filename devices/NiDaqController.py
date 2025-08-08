@@ -1,66 +1,70 @@
 import nidaqmx
-from nidaqmx.constants import Edge
+from nidaqmx.constants import Edge, AcquisitionType, TerminalConfiguration
 
 class NiDaq():
     """
-    Instrument driver for the 8 channel NiDaq
+    Class for reading data from an NiDaq
     """
-    
-    def __init__(self, deviceName, triggered):
+
+    def __init__(self, deviceName):
         self.deviceName = deviceName
-        self.triggered = triggered
-    
+
     def open(self):
-        """
-        Creates a task and initializes all 8 channels
-        """
-
-        if self.triggered:
-            try:
-                self.task = nidaqmx.Task()
-                for i in range(16):
-                    self.task.ai_channels.add_ai_voltage_chan((self.deviceName + "/ai" + str(i)), min_val=-10, max_val=10, terminal_config=nidaqmx.constants.TerminalConfiguration.RSE)
-
-
-                #define the trigger
-                self.task.triggers.start_trigger.cfg_dig_edge_start_trig(trigger_source=(self.deviceName + '/PFI0' + str(0)), trigger_edge=Edge.RISING)
-            except Exception as e:
-                print("NiDaq Error:" + e)
-        else:
-            try:
-                self.task = nidaqmx.Task()
-                for i in range(16):
-                    self.task.ai_channels.add_ai_voltage_chan((self.deviceName + "/ai" + str(i)), min_val=-10, max_val=10, terminal_config=nidaqmx.constants.TerminalConfiguration.RSE)
-                #print("Opened NiDaq: " + self.deviceName)
-            except:
-                print("Error: Make sure the device is connected")
+        pass
 
     def close(self):
-        """
-        Closes task to free up resources
-        """
-
         if self.task is not None:
             self.task.close()
-            #print("Closed NiDaq: " + self.deviceName)
-        else:
-            print("Device is already closed")
-    
-    def getChVoltage(self, ch:int):
+
+    def getChVoltage(self, ch:int, trigger:str):
         """
-        Reads voltages from all 8 channels but only returns the channel voltage specified
+        Function for actually reading the data
+
+        Parameters:
+            ch: channel number (int)
+            trigger: terminal source for digital triggering (str)
+
+        returns:
+            voltage: value in volts
         """
 
-        self.data = {}
+        if trigger is not None:
+            #create the task and add the specified channel
+            self.task = nidaqmx.Task()
 
-        #read all voltages from device
-        self.voltages = self.task.read()
+            self.task.ai_channels.add_ai_voltage_chan((self.deviceName + "/ai" + str(ch-1)), min_val=-10, max_val=10, terminal_config=TerminalConfiguration.RSE)
 
-        #add voltages to data dictionary
-        for i in range(8):
-            self.data[i+1] = self.voltages[i]
+            #define the trigger and sample clock
+            self.task.triggers.start_trigger.cfg_dig_edge_start_trig(trigger_source=trigger, trigger_edge=Edge.RISING)
+
+            self.task.timing.cfg_samp_clk_timing(
+                rate=1e3,
+                sample_mode=AcquisitionType.FINITE,
+                samps_per_chan=2
+            )
+
+            #get the voltage
+            voltage = self.task.read()
+
+            #close the task to free up resources
+            self.task.close()
+            self.task=None
+
+            #return the voltage
+            return voltage
         
-        #read the voltage that's been specified
-        self.chVoltage = self.data[ch]
-        return self.chVoltage
-        
+        elif trigger is None:
+            #create the task and add the specified channel
+            self.task = nidaqmx.Task()
+
+            self.task.ai_channels.add_ai_voltage_chan((self.deviceName + "/ai" + str(ch-1)), min_val=-10, max_val=10, terminal_config=TerminalConfiguration.RSE)
+
+            #get the voltage
+            voltage = self.task.read()
+
+            #close the task to free up resources
+            self.task.close()
+            self.task=None
+
+            #return the voltage
+            return voltage
