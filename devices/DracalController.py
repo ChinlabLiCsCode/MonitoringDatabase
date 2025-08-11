@@ -1,7 +1,7 @@
 import subprocess
 
 class Dracal():
-    def __init__(self, name, trigger=None):
+    def __init__(self, name):
         pass
 
     def open(self):
@@ -10,7 +10,7 @@ class Dracal():
     def close(self):
         pass
 
-    def getChHume(self, chNum:str):
+    def getChHume(self, chNum:str, trigger=None):
         "chNum is the serial number of the device"
         self.SN = chNum
 
@@ -27,7 +27,7 @@ class Dracal():
         return rh
 
 
-    def getChTemp(self, chNum:str):
+    def getChTemp(self, chNum:str, trigger=None):
         "ChHum is the serial number of the device"
         self.SN = chNum
 
