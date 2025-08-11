@@ -95,7 +95,10 @@ class DeviceManager(multiprocessing.Process):
                 methodCall = ''.join([i for i in parameter if not i.isdigit()])
 
                 #get trigger: for now this is only relevant to the nidaq
-                trigger = self.deviceParameters[parameter]["trigger"]
+                if 'trigger' in self.deviceParameters[parameter].keys():
+                    trigger = self.deviceParameters[parameter]["trigger"]
+                else:
+                    trigger = None
 
                 if self.deviceParameters[parameter]["isOn"]:
                     if "chNum" not in self.deviceParameters[parameter].keys():
@@ -105,7 +108,7 @@ class DeviceManager(multiprocessing.Process):
 
                             "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
 
-                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(trigger)},
+                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum, trigger)},
 
                             "time": int(time.time()*1e3)
                             }}
