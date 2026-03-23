@@ -101,31 +101,35 @@ class DeviceManager(multiprocessing.Process):
                     trigger = None
 
                 if self.deviceParameters[parameter]["isOn"]:
-                    if "chNum" not in self.deviceParameters[parameter].keys():
-                        self.deviceData.update(
-                            {parameter: {
-                            "measurement": self.deviceParameters[parameter]["measurement"],
+                    try:
+                        if "chNum" not in self.deviceParameters[parameter].keys():
+                            self.deviceData.update(
+                                {parameter: {
+                                "measurement": self.deviceParameters[parameter]["measurement"],
 
-                            "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
+                                "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
 
-                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum, trigger)},
+                                "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum, trigger)},
 
-                            "time": int(time.time()*1e3)
-                            }}
+                                "time": int(time.time()*1e3)
+                                }}
+                            )
+                        else:
+                            chNum = self.deviceParameters[parameter]["chNum"]
+                            self.deviceData.update(
+                                {(parameter): {
+                                "measurement": self.deviceParameters[parameter]["measurement"],
+
+                                "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
+
+                                "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum, trigger)},
+
+                                "time": int(time.time()*1e3)
+                                }}
                         )
-                    else:
-                        chNum = self.deviceParameters[parameter]["chNum"]
-                        self.deviceData.update(
-                            {(parameter): {
-                            "measurement": self.deviceParameters[parameter]["measurement"],
-
-                            "tags": {"Device_Class": self.deviceType, "Serial_Number": self.serialNum, "Parameter": parameter},
-
-                            "fields": {self.deviceParameters[parameter]["field"]: getattr(self.device, 'get' + methodCall)(chNum, trigger)},
-
-                            "time": int(time.time()*1e3)
-                            }}
-                        )
+                    except:
+                        print(f'failed to collect {parameter}')
+                        continue
         except Exception as e:
             print("Error, unable to get data from, " + self.serialNum)
             self.isCollecting.clear()
