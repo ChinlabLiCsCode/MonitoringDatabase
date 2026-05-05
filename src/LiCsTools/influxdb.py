@@ -128,36 +128,21 @@ class InfluxDBLogger:
                 print(e)
     
     def testConnection(self) -> tuple[bool, str]:
-        """Write empty data to the server to test the connection"""
-        client = influxdb_client.InfluxDBClient(
-            url=self.credentials.url,
-            token=self.credentials.token,
-            org=self.credentials.org,
-            ssl=True,
-            verify_ssl=False
-        )
-
-        health = client.health()
-        message = health.message
-        success = health.status == "pass"
-        if success:
-            try:
-                self.write_api.write(
-                    bucket="testing",
-                    org=self.credentials.org,
-                    record={
-                        "measurement": 'test',
-                        "fields": {"Test Value": 3.14}
-                    },
-                )
-            except ApiException as e:
-                success = False
-                message = e.message
-            except Exception:
-                success = False
-                message = "Exception occurred. Check server log file for details."
-
-        return success, message
+        """Write a test point to verify the connection."""
+        try:
+            self.write_api.write(
+                bucket="testing",
+                org=self.credentials.org,
+                record={
+                    "measurement": 'test',
+                    "fields": {"Test Value": 3.14}
+                },
+            )
+            return True, "OK"
+        except ApiException as e:
+            return False, f"Reason: {e.message}"
+        except Exception as e:
+            return False, f"Reason: {e}"
 
     def writeData(self, entry: dict):
         """Write data to the database"""

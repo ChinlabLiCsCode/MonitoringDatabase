@@ -1,5 +1,11 @@
 configs/*
+monitoring/.env
+monitoring/influx-backup/
 .DS_Store
 __pycache__/
 LiCsTools.egg-info/
 build/
+monitoring/mainLab.lp
+*.__pycache__
+*.pyc
+.claude/settings.local.json
