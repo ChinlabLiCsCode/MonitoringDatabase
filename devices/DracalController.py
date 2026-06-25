@@ -17,9 +17,8 @@ class Dracal():
         try:
             self.p = subprocess.check_output(["dracal-usb-get","-s", self.SN,"-i","1"]).decode('utf-8')
         except subprocess.CalledProcessError:
-            print("dracal-usb-get error")
-            message = "Can't get Humidity for " + chNum
-            print(message)
+            print(f"Can't get Humidity for {chNum}")
+            raise
 
         fields = self.p.split(",")
 
@@ -34,10 +33,8 @@ class Dracal():
         try:
             self.p = subprocess.check_output(["dracal-usb-get","-s", self.SN,"-i","0"]).decode('utf-8')
         except subprocess.CalledProcessError:
-            print("dracal-usb-get error")
-            message = "Can't get Temperature for " + chNum
-            print(message)
-
+            print(f"Can't get Temperature for {chNum}")
+            raise
 
         fields = self.p.split(",")
 
