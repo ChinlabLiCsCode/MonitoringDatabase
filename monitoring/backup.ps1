@@ -5,14 +5,14 @@
 # Schedule via Windows Task Scheduler — see MIGRATION.md for instructions.
 
 param(
-    [int]$RetainDays = 30
+    [int]$RetainDays = 7
 )
 
 $ErrorActionPreference = "Stop"
 
 $Token     = (Get-Content "C:/Users/lics/Desktop/DatabaseDevelopment/configs/influxdb_credentials.json" | ConvertFrom-Json).token
 $Date      = Get-Date -Format "yyyy-MM-dd"
-$BackupDir = "C:/InfluxDB/backups"
+$BackupDir = "C:\Users\lics\Box\CHIN_LICS\MonitoringBackups"
 $LogFile   = "$BackupDir/backup.log"
 $ContainerPath = "/tmp/influx-backup-$Date"
 $HostPath      = "$BackupDir/backup-$Date"
