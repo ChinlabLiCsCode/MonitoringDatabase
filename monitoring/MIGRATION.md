@@ -160,8 +160,8 @@ from the cutover date onward (free tier has 14-day retention).
 ## Automated daily backups
 
 Backups are handled by `monitoring/backup.ps1`. It runs `influx backup` against
-the live container, copies the result to `C:/InfluxDB/backups/backup-YYYY-MM-DD/`,
-and deletes folders older than 30 days.
+the live container, copies the result to `"C:\Users\lics\Box\CHIN_LICS\MonitoringBackups\backup-YYYY-MM-DD\`,
+and deletes folders older than 7 days.
 
 ### Schedule with Windows Task Scheduler
 
