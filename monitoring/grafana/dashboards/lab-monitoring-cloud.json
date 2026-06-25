@@ -12,38 +12,20 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
-      },
-      {
-        "datasource": {
-          "type": "influxdb",
-          "uid": "influxdb-main"
-        },
-        "enable": true,
-        "hide": false,
-        "iconColor": "orange",
-        "name": "UPS Events",
-        "target": {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
-          },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"UPS Events\")\n  |> filter(fn: (r) => r._field == \"description\")",
-          "refId": "Anno"
-        }
       }
     ]
   },
-  "description": "LiCs lab environment temperature, humidity, and system health",
+  "description": "LiCs lab environment temperature, humidity, and system health — Grafana Cloud",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 1,
+  "id": null,
   "links": [],
   "panels": [
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -120,10 +102,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
           },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Temperature (C)\")\n  |> filter(fn: (r) => r.Device_Class == \"Dracal\")\n  |> drop(columns: [\"host\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "expr": "{__name__=~\"Temperature_C__.*\", Device_Class=\"Dracal\"}",
+          "legendFormat": "__auto",
           "refId": "A"
         }
       ],
@@ -132,7 +115,7 @@
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "^(.*?)\\s*\\{.*$",
+            "regex": "^Temperature_C__(.+?)_*$",
             "renamePattern": "$1"
           }
         }
@@ -141,8 +124,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -219,10 +202,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
           },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Relative Humidity (%)\")\n  |> filter(fn: (r) => r.Device_Class == \"Dracal\")\n  |> drop(columns: [\"host\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "expr": "{__name__=~\"Relative_Humidity__.*\", Device_Class=\"Dracal\"}",
+          "legendFormat": "__auto",
           "refId": "A"
         }
       ],
@@ -231,7 +215,7 @@
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "^(.*?)\\s*\\{.*$",
+            "regex": "^Relative_Humidity__(.+?)_*$",
             "renamePattern": "$1"
           }
         }
@@ -240,8 +224,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -321,10 +305,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
           },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Battery Capacity (%)\")\n  |> filter(fn: (r) => r.Device_Class == \"PowerPanel\")\n  |> drop(columns: [\"host\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "expr": "Battery_Capacity__UPS_Battery_Capacity_",
+          "legendFormat": "Battery Capacity",
           "refId": "A"
         }
       ],
@@ -346,8 +331,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -414,10 +399,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
           },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r._measurement == \"UPS Status\")\n  |> filter(fn: (r) => r.Device_Class == \"PowerPanel\")\n  |> drop(columns: [\"host\"])\n  |> last()",
+          "expr": "UPS_Status_On_Line",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -426,8 +412,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -484,10 +470,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
           },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"Output Voltage (V)\")\n  |> filter(fn: (r) => r.Device_Class == \"PowerPanel\")\n  |> drop(columns: [\"host\"])\n  |> last()",
+          "expr": "Output_Voltage_V__UPS_Output_Voltage_V_",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -496,8 +483,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -556,10 +543,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
           },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"Battery Capacity (%)\")\n  |> filter(fn: (r) => r.Device_Class == \"PowerPanel\")\n  |> drop(columns: [\"host\"])\n  |> last()",
+          "expr": "Battery_Capacity__UPS_Battery_Capacity_",
+          "instant": true,
           "refId": "A"
         }
       ],
@@ -568,8 +556,8 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -626,196 +614,16 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
           },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"Battery Runtime (min)\")\n  |> filter(fn: (r) => r.Device_Class == \"PowerPanel\")\n  |> drop(columns: [\"host\"])\n  |> last()",
+          "expr": "Battery_Runtime_min__UPS_Battery_Runtime_min_",
+          "instant": true,
           "refId": "A"
         }
       ],
       "title": "Battery Runtime (min)",
       "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 30
-      },
-      "id": 24,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": ["sum"],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Time"
-          }
-        ]
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
-          },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"UPS Events\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> keep(columns: [\"_time\", \"description\", \"category\"])\n  |> sort(columns: [\"_time\"], desc: true)",
-          "refId": "A"
-        }
-      ],
-      "title": "UPS Events Log",
-      "type": "table"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 37
-      },
-      "id": 15,
-      "panels": [],
-      "title": "System Health",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb-main"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "items",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 20,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line+area"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1000
-              },
-              {
-                "color": "red",
-                "value": 4000
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 24,
-        "x": 0,
-        "y": 38
-      },
-      "id": 16,
-      "options": {
-        "legend": {
-          "calcs": [
-            "last",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-main"
-          },
-          "query": "from(bucket: \"mainLab\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"queue length\")\n  |> aggregateWindow(every: v.windowPeriod, fn: max, createEmpty: false)\n  |> yield(name: \"max\")",
-          "refId": "A"
-        }
-      ],
-      "title": "InfluxDB Write Queue Length",
-      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -823,7 +631,8 @@
   "schemaVersion": 40,
   "tags": [
     "lab",
-    "environment"
+    "environment",
+    "cloud"
   ],
   "templating": {
     "list": []
@@ -834,8 +643,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "LiCs Lab Environment",
-  "uid": "lics-lab-env",
-  "version": 15,
+  "title": "LiCs Lab Environment (Cloud)",
+  "uid": "lics-lab-env-cloud",
+  "version": 1,
   "weekStart": ""
 }
