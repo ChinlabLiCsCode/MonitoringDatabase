@@ -6,6 +6,7 @@ import yaml
 from yaml.loader import FullLoader
 from LiCsTools.influxdb import InfluxDBLogger
 from LiCsTools.deviceManager import DeviceManager
+from PowerPanelEventPoller import PowerPanelEventPoller
 
 class ServerManager(rpyc.Service):
     """
@@ -91,6 +92,12 @@ class ServerManager(rpyc.Service):
 
         #start logging data
         self.influx.startLogging()
+
+        #start UPS event poller
+        if hasattr(self, "_event_poller") and self._event_poller is not None:
+            self._event_poller.stop()
+        self._event_poller = PowerPanelEventPoller(self.influx)
+        self._event_poller.start()
     
     def exposed_stopAllServers(self):
         """
@@ -178,6 +185,10 @@ class ServerManager(rpyc.Service):
         #end all processes
         for process in self.activeDevices:
             self.servers[process].close()
+
+        #stop UPS event poller
+        if hasattr(self, "_event_poller") and self._event_poller is not None:
+            self._event_poller.stop()
 
         #stop logging
         self.influx.stopLogging()
