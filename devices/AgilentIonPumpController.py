@@ -1,7 +1,7 @@
 import serial
 
 
-class UHV:
+class AgilentIonPump:
     """Driver for the Agilent 4UHV ion pump controller (Window Protocol).
 
     Serial: 9600 baud, 8 data bits, no parity, 1 stop bit.
@@ -15,6 +15,10 @@ class UHV:
         self.ser = serial.Serial(port, 9600, bytesize=8,
                                  parity='N', stopbits=1, timeout=timeout)
         self.addr = 0x80 + addr  # RS-232: leave addr=0
+    
+    def open(self):
+        pass
+        
 
     # --- protocol ---------------------------------------------------------
 
@@ -63,7 +67,7 @@ class UHV:
             etx = resp.index(self.ETX)
         except ValueError:
             raise IOError("malformed response (no ETX)")
-        return resp[5:etx].decode("ascii", errors="ignore").strip()
+        return resp[6:etx].decode("ascii", errors="ignore").strip()
 
     # --- channel readouts -------------------------------------------------
 
@@ -74,28 +78,33 @@ class UHV:
             raise ValueError("channel must be 1-4")
         return 810 + (ch - 1) * 10
 
-    def get_voltage(self, ch: int) -> int:
+    def getChVoltage(self, ch: int, trigger=None) -> int:
         """Measured voltage on a channel, in volts."""
         return int(self.read_window(self._base(ch) + 0))
 
-    def get_current(self, ch: int) -> float:
+    def getChCurrent(self, ch: int, trigger=None) -> float:
         """Measured current on a channel, in amps (e.g. '1E-10' -> 1e-10)."""
         return float(self.read_window(self._base(ch) + 1))
 
-    def get_pressure(self, ch: int) -> float:
-        """Measured pressure on a channel, in the controller's pressure unit."""
-        return float(self.read_window(self._base(ch) + 2))
+    def getChPressure(self, ch: int, trigger=None) -> float:
+        """Measured pressure on a channel. Returns 0.0 if the controller reports
+        a non-numeric status (e.g. 'Low Pressure' when below the gauge range)."""
+        raw = self.read_window(self._base(ch) + 2)
+        try:
+            return float(raw)
+        except ValueError:
+            return 0.0
 
     # --- convenience ------------------------------------------------------
 
     def get_all_voltages(self) -> dict:
-        return {ch: self.get_voltage(ch) for ch in (1, 2, 3, 4)}
+        return {ch: self.getChVoltage(ch) for ch in (1, 2, 3, 4)}
 
     def get_all_currents(self) -> dict:
-        return {ch: self.get_current(ch) for ch in (1, 2, 3, 4)}
+        return {ch: self.getChCurrent(ch) for ch in (1, 2, 3, 4)}
 
     def get_all_pressures(self) -> dict:
-        return {ch: self.get_pressure(ch) for ch in (1, 2, 3, 4)}
+        return {ch: self.getChPressure(ch) for ch in (1, 2, 3, 4)}
 
     def get_unit(self) -> str:
         """Pressure unit currently configured on the controller."""
@@ -107,10 +116,10 @@ class UHV:
 
 
 if __name__ == "__main__":
-    pump = UHV("/dev/ttyUSB0")        # or "COM3" on Windows
+    pump = AgilentIonPump("COM3")
     print("Pressure unit:", pump.get_unit())
-    for ch in (1, 2, 3, 4):
-        print(f"CH{ch}: {pump.get_voltage(ch)} V, "
-              f"{pump.get_current(ch):.2e} A, "
-              f"{pump.get_pressure(ch):.2e}")
+    for ch in (1, 2):
+        print(f"CH{ch}: {pump.getChVoltage(ch)} V, "
+              f"{pump.getChCurrent(ch):.2e} A, "
+              f"{pump.getChPressure(ch):.2e}")
     pump.close()
