@@ -12,6 +12,19 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "grafanacloud-chinlablics-prom"
+        },
+        "enable": true,
+        "hide": false,
+        "iconColor": "orange",
+        "name": "UPS Events",
+        "expr": "UPS_Events_event_id",
+        "step": "60s",
+        "titleFormat": "{{category}}"
       }
     ]
   },
@@ -106,17 +119,24 @@
             "uid": "grafanacloud-chinlablics-prom"
           },
           "expr": "{__name__=~\"Temperature_C__.*\", Device_Class=\"Dracal\"}",
-          "legendFormat": "__auto",
+          "legendFormat": "{{__name__}}",
           "refId": "A"
         }
       ],
       "title": "Temperature",
       "transformations": [
         {
-          "id": "renameByRegex",
+          "id": "organize",
           "options": {
-            "regex": "^Temperature_C__(.+?)_*$",
-            "renamePattern": "$1"
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Temperature_C__Top_of_Optical_Table_Temp_C_": "Top of Optical Table Temp (C)",
+              "Temperature_C__Optical_Table_Main_Door_Side_Temp_C_": "Optical Table (Main Door Side) Temp (C)",
+              "Temperature_C__Cs_ECDL_Temp_C_": "Cs ECDL Temp (C)",
+              "Temperature_C__Back_of_Lab_Temp_C_": "Back of Lab Temp (C)",
+              "Temperature_C__Li_Box_Temp_C_": "Li Box Temp (C)"
+            }
           }
         }
       ],
@@ -206,17 +226,24 @@
             "uid": "grafanacloud-chinlablics-prom"
           },
           "expr": "{__name__=~\"Relative_Humidity__.*\", Device_Class=\"Dracal\"}",
-          "legendFormat": "__auto",
+          "legendFormat": "{{__name__}}",
           "refId": "A"
         }
       ],
       "title": "Relative Humidity",
       "transformations": [
         {
-          "id": "renameByRegex",
+          "id": "organize",
           "options": {
-            "regex": "^Relative_Humidity__(.+?)_*$",
-            "renamePattern": "$1"
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Relative_Humidity__Top_of_Optical_Table_RH_": "Top of Optical Table RH (%)",
+              "Relative_Humidity__Optical_Table_Main_Door_Side_RH_": "Optical Table (Main Door Side) RH (%)",
+              "Relative_Humidity__Cs_ECDL_RH_": "Cs ECDL RH (%)",
+              "Relative_Humidity__Back_of_Lab_RH_C_": "Back of Lab RH (C)",
+              "Relative_Humidity__Li_Box_RH_": "Li Box RH (%)"
+            }
           }
         }
       ],
@@ -626,12 +653,105 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-chinlablics-prom"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "id": 26,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Time"
+          }
+        ]
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-chinlablics-prom"
+          },
+          "expr": "UPS_Events_event_id",
+          "format": "table",
+          "instant": false,
+          "range": true,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "UPS Events Log",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "__name__": true,
+              "device": true,
+              "instance": true,
+              "job": true
+            },
+            "renameByName": {
+              "Value": "Event ID",
+              "category": "Category"
+            },
+            "indexByName": {
+              "Time": 0,
+              "category": 1,
+              "Value": 2
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 37
       },
       "id": 23,
       "panels": [],
@@ -699,7 +819,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 38
       },
       "id": 24,
       "options": {
@@ -725,17 +845,21 @@
             "uid": "grafanacloud-chinlablics-prom"
           },
           "expr": "{__name__=~\"Pressure_Torr__Ion_Pump_._Pressure_Torr_\", Device_Class=\"AgilentIonPump\"}",
-          "legendFormat": "__auto",
+          "legendFormat": "{{__name__}}",
           "refId": "A"
         }
       ],
       "title": "Ion Pump Pressure",
       "transformations": [
         {
-          "id": "renameByRegex",
+          "id": "organize",
           "options": {
-            "regex": "^Pressure_Torr__Ion_Pump_(\\d+)_.*$",
-            "renamePattern": "Ion Pump $1"
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Pressure_Torr__Ion_Pump_1_Pressure_Torr_": "Ion Pump 1 Pressure (Torr)",
+              "Pressure_Torr__Ion_Pump_2_Pressure_Torr_": "Ion Pump 2 Pressure (Torr)"
+            }
           }
         }
       ],
@@ -802,7 +926,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 47
       },
       "id": 25,
       "options": {
@@ -828,17 +952,21 @@
             "uid": "grafanacloud-chinlablics-prom"
           },
           "expr": "{__name__=~\"Current_A__Ion_Pump_._Current_A_\", Device_Class=\"AgilentIonPump\"}",
-          "legendFormat": "__auto",
+          "legendFormat": "{{__name__}}",
           "refId": "A"
         }
       ],
       "title": "Ion Pump Current",
       "transformations": [
         {
-          "id": "renameByRegex",
+          "id": "organize",
           "options": {
-            "regex": "^Current_A__Ion_Pump_(\\d+)_.*$",
-            "renamePattern": "Ion Pump $1"
+            "excludeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Current_A__Ion_Pump_1_Current_A_": "Ion Pump 1 Current (A)",
+              "Current_A__Ion_Pump_2_Current_A_": "Ion Pump 2 Current (A)"
+            }
           }
         }
       ],
